@@ -1,0 +1,21 @@
+{
+  "manifest_version": 2,
+
+  "name": "Gitter Notifier",
+  "description": "Shows unread messages count badge",
+  "version": "1.0",
+
+  "background": {
+    "persistent": true,
+    "scripts": ["background.js"]
+  },
+
+  "browser_action": {
+    "default_icon": "gitter.png",
+    "default_popup": "click.html"
+  },
+  "permissions": [
+    "activeTab",
+    "alarms"
+  ]
+}
