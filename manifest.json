@@ -14,8 +14,12 @@
     "default_icon": "gitter.png",
     "default_popup": "click.html"
   },
+
+  "options_page": "options.html",
+
   "permissions": [
     "activeTab",
-    "alarms"
+    "alarms",
+    "storage"
   ]
 }
