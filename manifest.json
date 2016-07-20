@@ -20,6 +20,7 @@
   "permissions": [
     "activeTab",
     "alarms",
-    "storage"
+    "storage",
+    "https://api.gitter.im/"
   ]
 }
