@@ -8,10 +8,17 @@ function setBadge(text) {
 function setTitle(text) {
   chrome.browserAction.setTitle({title: ''+text});
 }
+function greyIcon() {
+  chrome.browserAction.setIcon({path: 'gitter-grey.png'});
+}
+function coloredIcon() {
+  chrome.browserAction.setIcon({path: 'gitter.png'});
+}
 
 function func() {
   chrome.storage.sync.get(null, function(options) {
     if (!options.token) {
+      greyIcon();
       setBadge('E');
       setTitle('API token not set\nPlease, see the options page');
       return;
@@ -25,6 +32,7 @@ function func() {
     request.open('GET', 'https://api.gitter.im/v1/rooms', true);
     request.onload = function() {
       if (this.status < 200 || this.status >= 400) {
+        greyIcon();
         setBadge('E');
         setTitle('Error: could not connect');
         return;
@@ -45,8 +53,10 @@ function func() {
         removeBadge();
         setTitle('No unread messages');
       }
+      coloredIcon();
     };
     request.onerror = function() {
+      greyIcon();
       setBadge('E');
       setTitle('Error: could not connect');
     }
@@ -55,6 +65,7 @@ function func() {
   });
 }
 
+greyIcon();
 func();
 chrome.alarms.onAlarm.addListener(func);
 chrome.alarms.create('time', {periodInMinutes: 1});
