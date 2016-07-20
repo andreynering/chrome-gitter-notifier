@@ -14,5 +14,5 @@ function func() {
 }
 
 chrome.alarms.onAlarm.addListener(func);
-chrome.alarms.create('time', {alarmInfo: {periodInMinutes: 1}});
+chrome.alarms.create('time', {periodInMinutes: 1});
 func();
