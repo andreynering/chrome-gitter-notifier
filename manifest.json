@@ -11,8 +11,7 @@
   },
 
   "browser_action": {
-    "default_icon": "gitter.png",
-    "default_popup": "click.html"
+    "default_icon": "gitter.png"
   },
 
   "options_page": "options.html",
