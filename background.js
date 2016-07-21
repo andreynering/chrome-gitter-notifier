@@ -1,3 +1,12 @@
+function openOptionsIfFirstRun() {
+  chrome.storage.sync.get(null, function(options) {
+    if (!options.firstRunTime) {
+      chrome.storage.sync.set({firstRunTime: new Date()});
+      chrome.runtime.openOptionsPage();
+    }
+  });
+}
+
 function removeBadge() {
   chrome.browserAction.setBadgeText({text: ''});
 }
@@ -65,6 +74,7 @@ function func() {
   });
 }
 
+openOptionsIfFirstRun();
 greyIcon();
 func();
 chrome.alarms.onAlarm.addListener(func);
