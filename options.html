@@ -1,15 +1,51 @@
 <!doctype html>
 <html>
   <head>
+    <link rel="shortcut icon" type="image/x-icon" href="gitter.png" />
     <title>Gitter Notifier Options</title>
+
+    <style>
+      body {
+        width: 100%;
+        height: 100%;
+      }
+      #content {
+        position: fixed;
+        width: 500px;
+        height: 300px;
+        top: 50%;
+        left: 50%;
+        margin-left: -250px;
+        margin-top: -150px;
+        border: 1px dotted black;
+        padding: 5px 5px 5px 5px;
+      }
+      #content input {
+        font-family: monospace, sans-serif;
+        width: 100%;
+      }
+    </style>
   </head>
   <body>
-    <form id="form">
-      <label for="token">Gitter Token</label><br>
-      <input id="token" /><br>
+    <div id="content">
+      <h1>Gitter Notifier Options</h1>
+      <p>
+        In order to make Gitter Notifier work, you need to setup
+        your access token.
+      </p>
+      <p>
+        Just login to Gitter first, and then go to
+        <a href="https://developer.gitter.im/apps" target="_blank">https://developer.gitter.im/apps</a>,
+        copy you access token and paste below.
+      </p>
 
-      <button>Save</button>
-    </form>
+      <form id="form">
+        <p><label for="token">Gitter Token</label></p>
+        <p><input id="token" /></p>
+
+        <p><button>Save</button><p>
+      </form>
+    </div>
 
     <script src="options.js"></script>
   </body>
