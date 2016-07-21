@@ -11,7 +11,7 @@
   },
 
   "browser_action": {
-    "default_icon": "gitter.png"
+    "default_icon": "img/favicon-read.ico"
   },
 
   "options_page": "options.html",

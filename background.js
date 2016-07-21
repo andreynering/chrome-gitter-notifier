@@ -17,23 +17,21 @@ function setBadge(text) {
 function setTitle(text) {
   chrome.browserAction.setTitle({title: ''+text});
 }
-function greyIcon() {
-  chrome.browserAction.setIcon({path: 'gitter-grey.png'});
+function readIcon() {
+  chrome.browserAction.setIcon({path: 'img/favicon-read.ico'});
 }
-function coloredIcon() {
-  chrome.browserAction.setIcon({path: 'gitter.png'});
+function unreadIcon() {
+  chrome.browserAction.setIcon({path: 'img/favicon-unread.ico'});
 }
 
 function func() {
   chrome.storage.sync.get(null, function(options) {
     if (!options.token) {
-      greyIcon();
+      readIcon();
       setBadge('E');
       setTitle('API token not set\nPlease, see the options page');
       return;
     }
-
-    removeBadge();
 
     var request = new XMLHttpRequest(),
       unreadCount = 0,
@@ -41,7 +39,7 @@ function func() {
     request.open('GET', 'https://api.gitter.im/v1/rooms', true);
     request.onload = function() {
       if (this.status < 200 || this.status >= 400) {
-        greyIcon();
+        readIcon();
         setBadge('E');
         setTitle('Error: could not connect');
         return;
@@ -62,14 +60,15 @@ function func() {
       if (unreadCount > 0) {
         setBadge(unreadCount);
         setTitle(titles.join('\n'));
+        unreadIcon();
       } else {
         removeBadge();
         setTitle('No unread messages');
+        readIcon();
       }
-      coloredIcon();
     };
     request.onerror = function() {
-      greyIcon();
+      readIcon();
       setBadge('E');
       setTitle('Error: could not connect');
     }
@@ -83,7 +82,6 @@ chrome.browserAction.onClicked.addListener(function(activeTab){
 });
 
 openOptionsIfFirstRun();
-greyIcon();
 func();
 chrome.alarms.onAlarm.addListener(func);
 chrome.alarms.create('time', {periodInMinutes: 1});
