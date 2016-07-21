@@ -50,9 +50,13 @@ function func() {
       var length = rooms.length;
       for (var i = 0; i < length; i++) {
         var room = rooms[i];
-        if (room.unreadCount > 0) {
-          unreadCount += room.unreadCount;
-          titles.push(room.unreadCount+' messages on '+room.name);
+        if (room.unreadItems > 0) {
+          unreadCount += room.unreadItems;
+          if (room.unreadItems == 1) {
+            titles.push('1 unread message on '+room.name);
+          } else {
+            titles.push(room.unreadItems+' unread messages on '+room.name);
+          }
         }
       }
       if (unreadCount > 0) {
