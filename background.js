@@ -24,7 +24,7 @@ function unreadIcon() {
   chrome.browserAction.setIcon({path: 'img/favicon-unread.ico'});
 }
 
-function func() {
+function updateBadgeCount() {
   chrome.storage.sync.get(null, function(options) {
     if (!options.token) {
       readIcon();
@@ -75,13 +75,21 @@ function func() {
     request.setRequestHeader('Authorization', 'Bearer '+options.token);
     request.send();
   });
-}
+};
 
 chrome.browserAction.onClicked.addListener(function(activeTab){
   chrome.tabs.create({url: 'https://gitter.im'});
 });
 
+chrome.contextMenus.create({
+  title: 'Update',
+  contexts: ['browser_action'],
+  onclick: function() {
+    updateBadgeCount();
+  }
+});
+
 openOptionsIfFirstRun();
-func();
-chrome.alarms.onAlarm.addListener(func);
+updateBadgeCount();
+chrome.alarms.onAlarm.addListener(updateBadgeCount);
 chrome.alarms.create('time', {periodInMinutes: 1});
