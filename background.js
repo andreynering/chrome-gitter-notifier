@@ -25,11 +25,21 @@ function unreadIcon() {
 }
 
 function updateBadgeCount() {
+  updateMenus();
+
   chrome.storage.sync.get(null, function(options) {
     if (!options.token) {
       readIcon();
       setBadge('E');
       setTitle('API token not set\nPlease, see the options page');
+      return;
+    }
+
+    if (isDoNotDisturb(options.doNotDisturb)) {
+      readIcon();
+      removeBadge();
+      var remainingMinutes = moment.unix(options.doNotDisturb).diff(moment(), 'minutes');
+      setTitle('You will not be disturbed by ' + remainingMinutes + ' minutes');
       return;
     }
 
@@ -77,25 +87,54 @@ function updateBadgeCount() {
   });
 };
 
+function isDoNotDisturb(doNotDisturbTillUnix) {
+  var doNotDisturbTill = moment.unix(doNotDisturbTillUnix);
+  return moment().isBefore(doNotDisturbTill);
+}
+
+function doNotDisturb(hours) {
+  var doNotDisturbTill = moment().add(hours, 'hours');
+
+  chrome.storage.sync.set({doNotDisturb: doNotDisturbTill.unix()}, function() {
+    updateBadgeCount();
+  });
+}
+
+function disableDoNotDisturb() {
+  chrome.storage.sync.set({doNotDisturb: null}, function() {
+    updateBadgeCount();
+  });
+}
+
 chrome.browserAction.onClicked.addListener(function(activeTab){
   chrome.tabs.create({url: 'https://gitter.im'});
 });
 
-chrome.contextMenus.create({
-  title: 'Update',
-  contexts: ['browser_action'],
-  onclick: function() {
-    updateBadgeCount();
-  }
-});
+function updateMenus() {
+  chrome.storage.sync.get(function(options) {
+    chrome.contextMenus.removeAll();
 
-chrome.contextMenus.create({
-  title: 'Donate',
-  contexts: ['browser_action'],
-  onclick: function() {
-    chrome.tabs.create({url: 'http://goo.gl/kqYe4L'});
-  }
-});
+    addMenu('Update', function() { updateBadgeCount(); });
+    addMenu('Donate', function() { chrome.tabs.create({url: 'http://goo.gl/kqYe4L'}); });
+
+    if (isDoNotDisturb(options.doNotDisturb)) {
+      addMenu('Disable do not disturb', function() { disableDoNotDisturb(); });
+    } else {
+      addMenu('Do not disturb: 1 hour',  function() { doNotDisturb(1); });
+      addMenu('Do not disturb: 2 hours', function() { doNotDisturb(2); });
+      addMenu('Do not disturb: 4 hours', function() { doNotDisturb(4); });
+      addMenu('Do not disturb: 8 hours', function() { doNotDisturb(8); });
+    }
+  });
+}
+
+function addMenu(title, action) {
+  chrome.contextMenus.create({
+    title: title,
+    contexts: ['browser_action'],
+    onclick: action
+  });
+}
 
 openOptionsIfFirstRun();
 updateBadgeCount();
