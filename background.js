@@ -89,6 +89,14 @@ chrome.contextMenus.create({
   }
 });
 
+chrome.contextMenus.create({
+  title: 'Donate',
+  contexts: ['browser_action'],
+  onclick: function() {
+    chrome.tabs.create({url: 'http://goo.gl/kqYe4L'});
+  }
+});
+
 openOptionsIfFirstRun();
 updateBadgeCount();
 chrome.alarms.onAlarm.addListener(updateBadgeCount);
