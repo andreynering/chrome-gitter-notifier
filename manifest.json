@@ -3,7 +3,7 @@
 
   "name": "Gitter Notifier",
   "description": "Shows Gitter unread messages count badge",
-  "version": "1.1",
+  "version": "1.2",
 
   "background": {
     "persistent": true,
