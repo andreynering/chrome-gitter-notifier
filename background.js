@@ -43,47 +43,46 @@ function updateBadgeCount() {
       return;
     }
 
-    var request = new XMLHttpRequest(),
-      unreadCount = 0,
-      titles = [];
-    request.open('GET', 'https://api.gitter.im/v1/rooms', true);
-    request.onload = function() {
-      if (this.status < 200 || this.status >= 400) {
+    fetch('https://api.gitter.im/v1/rooms', {
+      headers: {
+        'Authorization': 'Bearer '+options.token
+      }
+    }).
+      then(function(response) {
+        return response.json();
+      }).then(function(rooms) {
+        var unreadCount = 0,
+          titles = [];
+
+        for (var i = 0; i < rooms.length; i++) {
+          var room = rooms[i];
+
+          if (room.unreadItems > 0) {
+            unreadCount += room.unreadItems;
+
+            if (room.unreadItems == 1) {
+              titles.push('1 unread message on '+room.name);
+            } else {
+              titles.push(room.unreadItems+' unread messages on '+room.name);
+            }
+          }
+        }
+
+        if (unreadCount > 0) {
+          setBadge(unreadCount);
+          setTitle(titles.join('\n'));
+          unreadIcon();
+        } else {
+          removeBadge();
+          setTitle('No unread messages');
+          readIcon();
+        }
+      }).
+      catch(function(err) {
         readIcon();
         setBadge('E');
         setTitle('Error: could not connect');
-        return;
-      }
-      var rooms = JSON.parse(this.response);
-      var length = rooms.length;
-      for (var i = 0; i < length; i++) {
-        var room = rooms[i];
-        if (room.unreadItems > 0) {
-          unreadCount += room.unreadItems;
-          if (room.unreadItems == 1) {
-            titles.push('1 unread message on '+room.name);
-          } else {
-            titles.push(room.unreadItems+' unread messages on '+room.name);
-          }
-        }
-      }
-      if (unreadCount > 0) {
-        setBadge(unreadCount);
-        setTitle(titles.join('\n'));
-        unreadIcon();
-      } else {
-        removeBadge();
-        setTitle('No unread messages');
-        readIcon();
-      }
-    };
-    request.onerror = function() {
-      readIcon();
-      setBadge('E');
-      setTitle('Error: could not connect');
-    }
-    request.setRequestHeader('Authorization', 'Bearer '+options.token);
-    request.send();
+      });
   });
 };
 
