@@ -113,8 +113,14 @@ function disableDoNotDisturb() {
   });
 }
 
+var gitterTab = null;
+
 chrome.browserAction.onClicked.addListener(function(activeTab){
-  chrome.tabs.create({url: 'https://gitter.im'});
+  if (gitterTab === null || gitterTab.closed) {
+    gitterTab = window.open('https://gitter.im');
+  } else {
+    gitterTab.focus();
+  }
 });
 
 function updateMenus() {
