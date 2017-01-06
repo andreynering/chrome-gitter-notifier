@@ -7,11 +7,15 @@ function openOptionsIfFirstRun() {
   });
 }
 
+var COLOR_GREEN = '#33cc33',
+  COLOR_ORANGE = '#ff6600',
+  COLOR_RED = '#ff0000';
+
 function removeBadge() {
   chrome.browserAction.setBadgeText({text: ''});
 }
-function setBadge(text) {
-  chrome.browserAction.setBadgeBackgroundColor({color: '#ff0000'});
+function setBadge(text, color) {
+  chrome.browserAction.setBadgeBackgroundColor({color: color});
   chrome.browserAction.setBadgeText({text: ''+text});
 }
 function setTitle(text) {
@@ -30,7 +34,7 @@ function updateBadgeCount() {
   chrome.storage.sync.get(null, function(options) {
     if (!options.token) {
       readIcon();
-      setBadge('E');
+      setBadge('E', COLOR_RED);
       setTitle('API token not set\nPlease, see the options page');
       return;
     }
@@ -52,24 +56,28 @@ function updateBadgeCount() {
         return response.json();
       }).then(function(rooms) {
         var unreadCount = 0,
+          mentionCount = 0,
           titles = [];
 
         for (var i = 0; i < rooms.length; i++) {
           var room = rooms[i];
 
-          if (room.unreadItems > 0) {
-            unreadCount += room.unreadItems;
+          mentionCount += room.mentions;
+          unreadCount += room.unreadItems;
 
-            if (room.unreadItems == 1) {
-              titles.push('1 unread message on '+room.name);
-            } else {
-              titles.push(room.unreadItems+' unread messages on '+room.name);
-            }
+          if (room.unreadItems == 1) {
+            titles.push('1 unread message on '+room.name);
+          } else if (room.unreadItems > 1) {
+            titles.push(room.unreadItems+' unread messages on '+room.name);
           }
         }
 
-        if (unreadCount > 0) {
-          setBadge(unreadCount);
+        if (mentionCount > 0) {
+          setBadge('@', COLOR_ORANGE);
+          setTitle(titles.join('\n'));
+          unreadIcon();
+        } else if (unreadCount > 0) {
+          setBadge(unreadCount, COLOR_GREEN);
           setTitle(titles.join('\n'));
           unreadIcon();
         } else {
@@ -80,7 +88,7 @@ function updateBadgeCount() {
       }).
       catch(function(err) {
         readIcon();
-        setBadge('E');
+        setBadge('E', COLOR_RED);
         setTitle('Error: could not connect');
       });
   });
